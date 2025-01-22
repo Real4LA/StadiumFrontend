@@ -19,6 +19,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 import VerifyCode from "./VerifyCode";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Signup = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -102,7 +104,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/users/", {
+      const response = await fetch(`${API_URL}/users/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

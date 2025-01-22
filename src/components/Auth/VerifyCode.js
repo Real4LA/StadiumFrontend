@@ -14,6 +14,8 @@ import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const VerifyCode = ({ email, userId }) => {
   const [verificationCode, setVerificationCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -85,18 +87,15 @@ const VerifyCode = ({ email, userId }) => {
     setCountdown(60); // 60 seconds cooldown
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/users/resend-code/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: userId,
-          }),
-        }
-      );
+      const response = await fetch(`${API_URL}/users/resend-code/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+        }),
+      });
 
       const data = await response.json();
 
