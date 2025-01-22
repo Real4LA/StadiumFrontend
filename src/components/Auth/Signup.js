@@ -119,17 +119,24 @@ const Signup = () => {
         }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setVerificationSent(true);
-        setVerificationEmail(data.email);
-        setUserId(data.userId);
-      } else {
-        setError(data.error || "Registration failed. Please try again.");
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          throw new Error(
+            data.error || "Registration failed. Please try again."
+          );
+        } else {
+          throw new Error("Registration failed. Server error occurred.");
+        }
       }
+
+      const data = await response.json();
+      setVerificationSent(true);
+      setVerificationEmail(data.email);
+      setUserId(data.userId);
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError(error.message || "An error occurred. Please try again.");
       console.error("Registration error:", error);
     } finally {
       setLoading(false);

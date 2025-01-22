@@ -46,32 +46,33 @@ const VerifyCode = ({ email, userId }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/users/verify-code/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: verificationCode.trim(),
-            userId: userId,
-          }),
+      const response = await fetch(`${API_URL}/users/verify-code/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: verificationCode.trim(),
+          userId: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          throw new Error(data.error || "Verification failed");
+        } else {
+          throw new Error("Verification failed");
         }
-      );
+      }
 
       const data = await response.json();
-
-      if (response.ok) {
-        // Store tokens and redirect
-        localStorage.setItem("accessToken", data.tokens.access);
-        localStorage.setItem("refreshToken", data.tokens.refresh);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/home");
-      } else {
-        setError(data.error || "Verification failed");
-        setVerificationCode(""); // Clear the input on error
-      }
+      // Store tokens and redirect
+      localStorage.setItem("accessToken", data.tokens.access);
+      localStorage.setItem("refreshToken", data.tokens.refresh);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/home");
     } catch (error) {
       setError("An error occurred. Please try again.");
       setVerificationCode(""); // Clear the input on error
