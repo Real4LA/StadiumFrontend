@@ -20,6 +20,7 @@ import VerifyCode from "./VerifyCode";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 
 const API_URL = process.env.REACT_APP_API_URL;
+console.log("API URL:", API_URL); // Debug log
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -104,11 +105,14 @@ const Signup = () => {
     }
 
     try {
+      console.log("Making request to:", `${API_URL}/users/`); // Debug log
       const response = await fetch(`${API_URL}/users/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
@@ -119,19 +123,29 @@ const Signup = () => {
         }),
       });
 
+      // Log response details for debugging
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
       if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          throw new Error(
-            data.error || "Registration failed. Please try again."
-          );
-        } else {
-          throw new Error("Registration failed. Server error occurred.");
-        }
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      // Check if response is empty
+      const text = await response.text();
+      if (!text) {
+        throw new Error("Empty response from server");
+      }
+
+      // Try to parse JSON
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error("Failed to parse response:", text);
+        throw new Error("Invalid response format from server");
+      }
+
       setVerificationSent(true);
       setVerificationEmail(data.email);
       setUserId(data.userId);
