@@ -8,7 +8,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: REACT_APP_API_URL
-        value: YOUR_BACKEND_URL # You'll need to update this with your actual backend URL
+        value: https://stadiumbackend.onrender.com # Temporary placeholder - update this after backend deployment
     headers:
       - path: /*
         name: Cache-Control
