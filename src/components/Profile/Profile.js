@@ -24,6 +24,7 @@ import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 import { API_CONFIG, getApiUrl, getAuthHeaders } from "../../config/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const Profile = () => {
   const [cancelError, setCancelError] = useState(null);
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const { user, checkAuth } = useAuth();
 
   useEffect(() => {
     fetchUpcomingReservations();
@@ -52,6 +53,13 @@ const Profile = () => {
       const response = await fetch(bookingsUrl, {
         headers: getAuthHeaders(token),
       });
+
+      if (response.status === 401) {
+        // Token expired, try to refresh auth
+        await checkAuth();
+        // Retry the request
+        return fetchUpcomingReservations();
+      }
 
       console.log("Response status:", response.status);
       const responseText = await response.text();

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -12,13 +12,14 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import Footer from "../Layout/Footer";
 import LinearProgress from "@mui/material/LinearProgress";
 import VerifyCode from "./VerifyCode";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 import API_CONFIG, { getApiUrl, getDefaultHeaders } from "../../config/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -38,6 +39,16 @@ const Signup = () => {
   const [verificationEmail, setVerificationEmail] = useState("");
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = location.state?.from?.pathname || "/";
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

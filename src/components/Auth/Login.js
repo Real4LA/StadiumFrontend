@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -23,6 +23,7 @@ import API_CONFIG, {
   getDefaultHeaders,
   getAuthHeaders,
 } from "../../config/api";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -33,6 +34,16 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = location.state?.from?.pathname || "/";
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   const handleChange = (e) => {
     setFormData({
@@ -81,35 +92,19 @@ const Login = () => {
       const data = JSON.parse(responseData);
       console.log("Login successful:", data);
 
-      // Store tokens and user data
-      if (data.tokens) {
-        localStorage.setItem("accessToken", data.tokens.access);
-        localStorage.setItem("refreshToken", data.tokens.refresh);
-      } else if (data.access) {
-        localStorage.setItem("accessToken", data.access);
-        localStorage.setItem("refreshToken", data.refresh);
-      }
+      // Use auth context to handle login
+      if (data.tokens || (data.access && data.refresh)) {
+        const tokens = data.tokens || {
+          access: data.access,
+          refresh: data.refresh,
+        };
+        login(data.user, tokens);
 
-      // Store user data if available
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/home");
+        // Navigate to the page they tried to visit or home
+        const from = location.state?.from?.pathname || "/";
+        navigate(from, { replace: true });
       } else {
-        // If user data not included in response, fetch it
-        const userResponse = await fetch(
-          getApiUrl(API_CONFIG.ENDPOINTS.AUTH.USER_INFO),
-          {
-            headers: getAuthHeaders(data.access || data.tokens.access),
-          }
-        );
-
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          localStorage.setItem("user", JSON.stringify(userData));
-          navigate("/home");
-        } else {
-          throw new Error("Failed to fetch user data");
-        }
+        throw new Error("Invalid response format");
       }
     } catch (error) {
       console.error("Login error:", error);

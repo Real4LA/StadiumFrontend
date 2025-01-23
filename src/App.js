@@ -8,22 +8,40 @@ import Signup from "./components/Auth/Signup";
 import Profile from "./components/Profile/Profile";
 import VerifyCode from "./components/Auth/VerifyCode";
 import Header from "./components/Layout/Header";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
 function App() {
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className="App">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/verify" element={<VerifyCode />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </LocalizationProvider>
+    <AuthProvider>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <div className="App">
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/verify" element={<VerifyCode />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </LocalizationProvider>
+    </AuthProvider>
   );
 }
 

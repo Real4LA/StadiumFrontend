@@ -14,12 +14,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const { user, logout, isAuthenticated } = useAuth();
 
   // Check if we're on login or signup pages
   const isAuthPage = ["/login", "/signup", "/verify"].some((path) =>
@@ -35,10 +36,8 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    navigate("/login");
+    handleClose();
+    logout();
   };
 
   const handleProfile = () => {
@@ -82,7 +81,7 @@ const Header = () => {
               color: "#fff",
             },
           }}
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/")}
         >
           STADIUM
         </Typography>
@@ -90,8 +89,8 @@ const Header = () => {
         {/* Spacer */}
         <Box sx={{ flexGrow: 1 }} />
 
-        {/* User Profile - Only show if not on auth pages */}
-        {!isAuthPage && (
+        {/* User Profile - Only show if authenticated and not on auth pages */}
+        {isAuthenticated && !isAuthPage && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography
               variant="body1"
@@ -101,7 +100,7 @@ const Header = () => {
                 fontWeight: 500,
               }}
             >
-              {user.first_name} {user.last_name}
+              {user?.first_name} {user?.last_name}
             </Typography>
             <IconButton
               size="large"
