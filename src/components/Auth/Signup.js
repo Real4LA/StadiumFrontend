@@ -19,8 +19,17 @@ import LinearProgress from "@mui/material/LinearProgress";
 import VerifyCode from "./VerifyCode";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 
-const API_URL =
-  process.env.REACT_APP_API_URL || "https://stadiumbackend.onrender.com/api";
+// Ensure we have a valid API URL
+const DEFAULT_API_URL = "https://stadiumbackend.onrender.com/api";
+const API_URL = process.env.REACT_APP_API_URL || DEFAULT_API_URL;
+
+// Ensure the URL is properly formatted
+const getFullApiUrl = (endpoint) => {
+  const baseUrl = API_URL.endsWith("/") ? API_URL.slice(0, -1) : API_URL;
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+  return `${baseUrl}/${cleanEndpoint}`;
+};
+
 console.log("Environment API URL:", process.env.REACT_APP_API_URL);
 console.log("Using API URL:", API_URL);
 
@@ -106,7 +115,7 @@ const Signup = () => {
       return;
     }
 
-    const apiUrl = `${API_URL}/users/`;
+    const apiUrl = getFullApiUrl("users/");
     console.log("Full request URL:", apiUrl);
 
     try {
@@ -115,6 +124,7 @@ const Signup = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          Origin: window.location.origin,
         },
         body: JSON.stringify({
           username: formData.username,
