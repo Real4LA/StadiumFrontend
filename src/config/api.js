@@ -15,7 +15,7 @@ export const API_CONFIG = {
       AVAILABLE_SLOTS: "calendar/available_slots/",
       BOOK_SLOT: "calendar/book_slot/",
       CANCEL_BOOKING: "calendar/cancel_booking/",
-      MY_BOOKINGS: "calendar/my-bookings/",
+      MY_BOOKINGS: "calendar/my_bookings/",
     },
   },
 };
