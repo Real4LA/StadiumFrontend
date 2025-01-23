@@ -160,8 +160,9 @@ const Signup = () => {
       console.log("Signup successful:", data);
 
       setVerificationSent(true);
-      setVerificationEmail(data.email || formData.email);
-      setUserId(data.userId || data.id); // Handle both possible field names
+      setVerificationEmail(data.user?.email || formData.email);
+      setUserId(data.user?.id); // Get user ID from the user object in the response
+      console.log("Setting user ID:", data.user?.id);
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.message || "An error occurred. Please try again.");
