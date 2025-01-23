@@ -119,11 +119,9 @@ const Signup = () => {
     try {
       const response = await fetch(signupUrl, {
         method: "POST",
-        headers: {
-          ...getDefaultHeaders(),
-          Origin: window.location.origin,
-        },
+        headers: getDefaultHeaders(),
         credentials: "include",
+        mode: "cors",
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
