@@ -1,20 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import App from "./App";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
-// Handle page refresh by redirecting to the deployed frontend URL while preserving the path
+// Handle page refresh by redirecting based on environment
+const isProduction =
+  window.location.hostname === "stadium-frontend.onrender.com";
+const currentPath = window.location.pathname;
+
+// Only redirect if we're not already on the production URL
 if (
-  window.performance &&
-  window.performance.navigation.type ===
-    window.performance.navigation.TYPE_RELOAD
+  isProduction &&
+  window.location.href !== `https://stadium-frontend.onrender.com${currentPath}`
 ) {
-  const currentPath = window.location.pathname;
-  window.location.replace(
-    `https://stadium-frontend.onrender.com${currentPath}`
-  );
+  window.location.href = `https://stadium-frontend.onrender.com${currentPath}`;
 }
 
 const theme = createTheme({
@@ -31,11 +32,11 @@ const theme = createTheme({
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <App />
       </ThemeProvider>
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>
 );
