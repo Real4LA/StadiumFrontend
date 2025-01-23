@@ -19,8 +19,10 @@ import LinearProgress from "@mui/material/LinearProgress";
 import VerifyCode from "./VerifyCode";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 
-const API_URL = process.env.REACT_APP_API_URL;
-console.log("API URL:", API_URL); // Debug log
+const API_URL =
+  process.env.REACT_APP_API_URL || "https://stadiumbackend.onrender.com/api";
+console.log("Environment API URL:", process.env.REACT_APP_API_URL);
+console.log("Using API URL:", API_URL);
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -104,9 +106,11 @@ const Signup = () => {
       return;
     }
 
+    const apiUrl = `${API_URL}/users/`;
+    console.log("Full request URL:", apiUrl);
+
     try {
-      console.log("Making request to:", `${API_URL}/users/`); // Debug log
-      const response = await fetch(`${API_URL}/users/`, {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
