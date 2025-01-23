@@ -128,21 +128,32 @@ const Signup = () => {
           password: formData.password,
           first_name: formData.firstName,
           last_name: formData.lastName,
-          phone: formData.phone,
+          phone_number: formData.phone,
         }),
       });
 
+      console.log("Request payload:", {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        phone_number: formData.phone,
+      });
+
       console.log("Response status:", response.status);
-      console.log("Response headers:", Array.from(response.headers.entries()));
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
+          console.error("Server error response:", errorData);
           throw new Error(
             errorData.detail ||
               errorData.message ||
-              "Registration failed. Please try again."
+              (typeof errorData === "object"
+                ? JSON.stringify(errorData)
+                : "Registration failed. Please try again.")
           );
         } else {
           const text = await response.text();
