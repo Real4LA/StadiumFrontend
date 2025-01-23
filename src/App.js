@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Home from "./components/Home/Home";
@@ -50,7 +51,10 @@ function App() {
             setCurrentSection={setCurrentSection}
             currentSection={currentSection}
           />
-          {renderSection()}
+          <Routes>
+            <Route path="/" element={renderSection()} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </div>
       </LocalizationProvider>
     </AuthProvider>
