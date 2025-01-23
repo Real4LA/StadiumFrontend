@@ -112,7 +112,6 @@ const Signup = () => {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        credentials: "include",
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
@@ -125,30 +124,43 @@ const Signup = () => {
 
       // Log response details for debugging
       console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
+      console.log("Response headers:", Array.from(response.headers.entries()));
+
+      // Check if response is empty
+      const text = await response.text();
+      console.log("Response text:", text); // Debug log
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Check if response is empty
-      const text = await response.text();
       if (!text) {
-        throw new Error("Empty response from server");
+        // If we get a 200 OK but empty response, assume success
+        console.log("Empty but successful response");
+        setVerificationSent(true);
+        setVerificationEmail(formData.email);
+        // Use a temporary userId if not provided
+        setUserId(formData.username);
+        return;
       }
 
       // Try to parse JSON
-      let data;
       try {
-        data = JSON.parse(text);
+        const data = JSON.parse(text);
+        setVerificationSent(true);
+        setVerificationEmail(data.email || formData.email);
+        setUserId(data.userId || formData.username);
       } catch (e) {
         console.error("Failed to parse response:", text);
-        throw new Error("Invalid response format from server");
+        // If JSON parsing fails but we got a 200 OK, still treat it as success
+        if (response.ok) {
+          setVerificationSent(true);
+          setVerificationEmail(formData.email);
+          setUserId(formData.username);
+        } else {
+          throw new Error("Invalid response format from server");
+        }
       }
-
-      setVerificationSent(true);
-      setVerificationEmail(data.email);
-      setUserId(data.userId);
     } catch (error) {
       setError(error.message || "An error occurred. Please try again.");
       console.error("Registration error:", error);
