@@ -121,21 +121,20 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch("http://localhost:8000/api/calendar/book/", {
-        method: "DELETE",
+      const cancelUrl = getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.CANCEL_BOOKING);
+      const response = await fetch(cancelUrl, {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          ...getAuthHeaders(token),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           calendar_id: selectedReservation.calendar_id,
           event_id: selectedReservation.event_id,
-          confirmation: confirmationText,
         }),
       });
 
       if (response.ok) {
-        const data = await response.json();
         setCancelSuccess(true);
         setTimeout(handleCancelClose, 2000);
       } else {
