@@ -295,14 +295,14 @@ const Home = () => {
     try {
       // First check if the slot is still available
       const checkResponse = await fetch(
-        `http://localhost:8000/api/calendar/available_slots/?date=${format(
+        `${getApiUrl(
+          API_CONFIG.ENDPOINTS.CALENDAR.AVAILABLE_SLOTS
+        )}?date=${format(
           selectedDate,
           "yyyy-MM-dd"
         )}&calendar_id=${encodeURIComponent(selectedSlot.calendarId)}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
+          headers: getAuthHeaders(localStorage.getItem("accessToken")),
         }
       );
 
@@ -341,14 +341,17 @@ const Home = () => {
 
       console.log("Sending booking data:", bookingData);
 
-      const response = await fetch("http://localhost:8000/api/calendar/book/", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingData),
-      });
+      const response = await fetch(
+        getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.BOOK_SLOT),
+        {
+          method: "POST",
+          headers: {
+            ...getAuthHeaders(localStorage.getItem("accessToken")),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bookingData),
+        }
+      );
 
       if (!(await handleTokenError(response))) return;
 

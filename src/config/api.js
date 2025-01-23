@@ -6,10 +6,10 @@ export const API_CONFIG = {
     AUTH: {
       LOGIN: "auth/login/",
       REGISTER: "auth/register/",
-      VERIFY_CODE: "auth/verify-code/",
-      RESEND_CODE: "auth/resend-code/",
-      USER_INFO: "auth/me/",
-      REFRESH_TOKEN: "auth/token/refresh/",
+      VERIFY_CODE: "users/verify-code/",
+      RESEND_CODE: "users/resend-code/",
+      USER_INFO: "users/me/",
+      REFRESH_TOKEN: "token/refresh/",
     },
     CALENDAR: {
       AVAILABLE_SLOTS: "calendar/available_slots/",
