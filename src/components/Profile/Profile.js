@@ -58,7 +58,13 @@ const Profile = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Received bookings:", data);
-        setUpcomingReservations(data.bookings || []);
+
+        // Sort bookings by start time
+        const sortedBookings = (data.bookings || []).sort((a, b) => {
+          return new Date(a.start_time) - new Date(b.start_time);
+        });
+
+        setUpcomingReservations(sortedBookings);
       } else {
         const errorData = await response.json();
         console.error("Error response:", errorData);
