@@ -23,6 +23,7 @@ import { format, parseISO } from "date-fns";
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
+import { API_CONFIG, getApiUrl, getAuthHeaders } from "../../config/api";
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
@@ -46,11 +47,9 @@ const Profile = () => {
       console.log("Using token:", token ? "Token exists" : "No token found");
 
       const response = await fetch(
-        "http://localhost:8000/api/calendar/my-bookings/",
+        getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.MY_BOOKINGS),
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: getAuthHeaders(token),
         }
       );
 
@@ -68,7 +67,7 @@ const Profile = () => {
     } catch (error) {
       console.error("Network error:", error);
       setError(
-        "Failed to connect to the server. Please ensure the backend server is running."
+        "Failed to connect to the server. Please check your internet connection."
       );
     } finally {
       setLoading(false);
