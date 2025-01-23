@@ -170,10 +170,14 @@ const Signup = () => {
       const data = JSON.parse(responseData);
       console.log("Signup successful:", data);
 
-      setVerificationSent(true);
-      setVerificationEmail(data.user?.email || formData.email);
-      setUserId(data.user?.id); // Get user ID from the user object in the response
-      console.log("Setting user ID:", data.user?.id);
+      if (data.user && data.user.email) {
+        setVerificationSent(true);
+        setVerificationEmail(data.user.email);
+        setUserId(data.user.id);
+        console.log("Setting user ID:", data.user.id);
+      } else {
+        throw new Error("Invalid response format from server");
+      }
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.message || "An error occurred. Please try again.");
