@@ -51,6 +51,10 @@ const VerifyCode = ({ email, userId }) => {
     try {
       const verifyUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.VERIFY_CODE);
       console.log("Making verification request to:", verifyUrl);
+      console.log("Verification data:", {
+        code: verificationCode.trim(),
+        userId,
+      });
 
       const response = await fetch(verifyUrl, {
         method: "POST",
@@ -61,22 +65,39 @@ const VerifyCode = ({ email, userId }) => {
         }),
       });
 
+      const responseData = await response.text();
+      console.log("Raw verification response:", responseData);
+
       if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || "Verification failed");
-        } else {
-          throw new Error("Verification failed");
+        let errorMessage = "Verification failed";
+        try {
+          const errorData = JSON.parse(responseData);
+          errorMessage =
+            errorData.detail || errorData.error || "Verification failed";
+        } catch (e) {
+          console.error("Error parsing verification error:", e);
         }
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      localStorage.setItem("accessToken", data.tokens.access);
-      localStorage.setItem("refreshToken", data.tokens.refresh);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/home");
+      try {
+        const data = JSON.parse(responseData);
+        console.log("Verification successful:", data);
+
+        if (data.tokens) {
+          localStorage.setItem("accessToken", data.tokens.access);
+          localStorage.setItem("refreshToken", data.tokens.refresh);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          navigate("/home");
+        } else {
+          throw new Error("Invalid response format");
+        }
+      } catch (e) {
+        console.error("Error parsing success response:", e);
+        throw new Error("Invalid response from server");
+      }
     } catch (error) {
+      console.error("Verification error:", error);
       setError(error.message || "An error occurred. Please try again.");
       setVerificationCode(""); // Clear the input on error
     } finally {
@@ -93,6 +114,7 @@ const VerifyCode = ({ email, userId }) => {
     try {
       const resendUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.RESEND_CODE);
       console.log("Making resend code request to:", resendUrl);
+      console.log("Resend data:", { userId });
 
       const response = await fetch(resendUrl, {
         method: "POST",
@@ -102,20 +124,25 @@ const VerifyCode = ({ email, userId }) => {
         }),
       });
 
+      const responseData = await response.text();
+      console.log("Raw resend response:", responseData);
+
       if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || "Failed to resend code");
-        } else {
-          throw new Error("Failed to resend code");
+        let errorMessage = "Failed to resend code";
+        try {
+          const errorData = JSON.parse(responseData);
+          errorMessage =
+            errorData.detail || errorData.error || "Failed to resend code";
+        } catch (e) {
+          console.error("Error parsing resend error:", e);
         }
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
       setError("New verification code sent to your email");
       setVerificationCode(""); // Clear the input when new code is sent
     } catch (error) {
+      console.error("Resend error:", error);
       setError(error.message || "An error occurred. Please try again.");
       setResendDisabled(false);
       setCountdown(0);

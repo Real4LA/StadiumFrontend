@@ -90,20 +90,6 @@ const Signup = () => {
     setError("");
     setLoading(true);
 
-    // Add debug logging
-    console.log("API_CONFIG.BASE_URL:", API_CONFIG.BASE_URL);
-    console.log(
-      "API_CONFIG.ENDPOINTS.AUTH.REGISTER:",
-      API_CONFIG.ENDPOINTS.AUTH.REGISTER
-    );
-
-    const signupUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER);
-    console.log("Complete signup URL:", signupUrl);
-
-    console.log("API Config:", API_CONFIG);
-    console.log("Making request to:", signupUrl);
-    console.log("With headers:", getDefaultHeaders());
-
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -117,6 +103,10 @@ const Signup = () => {
     }
 
     try {
+      const signupUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER);
+      console.log("Making signup request to:", signupUrl);
+
+      // Prepare the signup data
       const signupData = {
         username: formData.username,
         email: formData.email,
@@ -128,14 +118,11 @@ const Signup = () => {
         },
       };
 
+      console.log("Sending signup data:", signupData);
+
       const response = await fetch(signupUrl, {
         method: "POST",
-        headers: {
-          ...getDefaultHeaders(),
-          Accept: "application/json",
-        },
-        credentials: "include",
-        mode: "cors",
+        headers: getDefaultHeaders(),
         body: JSON.stringify(signupData),
       });
 
@@ -143,32 +130,38 @@ const Signup = () => {
       console.log("Raw response:", responseData);
 
       if (!response.ok) {
+        let errorMessage = "Registration failed. Please try again.";
         try {
           const errorData = JSON.parse(responseData);
-          console.error("Parsed error data:", errorData);
+          console.error("Error data:", errorData);
 
           // Handle specific error cases
-          if (errorData.profile?.phone) {
-            throw new Error(`Phone number error: ${errorData.profile.phone}`);
+          if (errorData.username) {
+            errorMessage = `Username error: ${errorData.username}`;
+          } else if (errorData.email) {
+            errorMessage = `Email error: ${errorData.email}`;
+          } else if (errorData.profile?.phone) {
+            errorMessage = `Phone error: ${errorData.profile.phone}`;
+          } else if (errorData.password) {
+            errorMessage = `Password error: ${errorData.password}`;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          } else if (errorData.detail) {
+            errorMessage = errorData.detail;
           }
-
-          const errorMessage =
-            errorData.detail ||
-            errorData.error ||
-            "Registration failed. Please try again.";
-
-          throw new Error(errorMessage);
         } catch (e) {
-          setError(e.message);
-          return;
+          console.error("Error parsing error response:", e);
         }
+        throw new Error(errorMessage);
       }
 
-      // Success case
+      // Parse the successful response
       const data = JSON.parse(responseData);
+      console.log("Signup successful:", data);
+
       setVerificationSent(true);
-      setVerificationEmail(data.email || formData.email);
-      setUserId(data.id || data.username);
+      setVerificationEmail(data.email);
+      setUserId(data.userId);
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.message || "An error occurred. Please try again.");

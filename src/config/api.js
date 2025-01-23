@@ -4,12 +4,12 @@ const API_CONFIG = {
     process.env.REACT_APP_API_URL || "https://stadiumbackend.onrender.com/api",
   ENDPOINTS: {
     AUTH: {
-      LOGIN: "/token/login/",
-      REGISTER: "/users/",
-      VERIFY_CODE: "/users/verify-code/",
-      RESEND_CODE: "/users/resend-code/",
-      USER_INFO: "/users/me/",
-      REFRESH_TOKEN: "/token/refresh/",
+      LOGIN: "token/login/",
+      REGISTER: "users/",
+      VERIFY_CODE: "users/verify-code/",
+      RESEND_CODE: "users/resend-code/",
+      USER_INFO: "users/me/",
+      REFRESH_TOKEN: "token/refresh/",
     },
     // Add other endpoint configurations here
   },
@@ -20,8 +20,8 @@ export const getApiUrl = (endpoint) => {
   const baseUrl = API_CONFIG.BASE_URL.endsWith("/")
     ? API_CONFIG.BASE_URL.slice(0, -1)
     : API_CONFIG.BASE_URL;
-  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-  return `${baseUrl}${cleanEndpoint}`;
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+  return `${baseUrl}/${cleanEndpoint}`;
 };
 
 // Default headers for API requests
