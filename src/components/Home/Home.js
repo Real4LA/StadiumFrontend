@@ -39,6 +39,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { debounce } from "@mui/material/utils";
+import API_CONFIG, { getApiUrl, getAuthHeaders } from "../../config/api";
 
 const testimonials = [
   {
@@ -198,17 +199,19 @@ const Home = () => {
           console.log(
             `Fetching slots for ${stadium.name} with calendar ID: ${stadium.calendarId}`
           );
-          const response = await fetch(
-            `http://localhost:8000/api/calendar/available_slots/?date=${format(
+
+          const url =
+            getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.AVAILABLE_SLOTS) +
+            `?date=${format(
               date,
               "yyyy-MM-dd"
-            )}&calendar_id=${encodeURIComponent(stadium.calendarId)}`,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-              },
-            }
-          );
+            )}&calendar_id=${encodeURIComponent(stadium.calendarId)}`;
+
+          console.log("Fetching slots from URL:", url);
+
+          const response = await fetch(url, {
+            headers: getAuthHeaders(localStorage.getItem("accessToken")),
+          });
 
           if (!(await handleTokenError(response))) continue;
 

@@ -11,7 +11,11 @@ export const API_CONFIG = {
       USER_INFO: "auth/me/",
       REFRESH_TOKEN: "auth/token/refresh/",
     },
-    // Add other endpoint configurations here
+    CALENDAR: {
+      AVAILABLE_SLOTS: "calendar/available_slots/",
+      BOOK_SLOT: "calendar/book_slot/",
+      CANCEL_BOOKING: "calendar/cancel_booking/",
+    },
   },
 };
 
