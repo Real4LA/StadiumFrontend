@@ -132,7 +132,6 @@ const Signup = () => {
         }),
       });
 
-      // Log response details for debugging
       console.log("Response status:", response.status);
       console.log("Response headers:", Array.from(response.headers.entries()));
 
@@ -141,9 +140,13 @@ const Signup = () => {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           throw new Error(
-            errorData.detail || "Registration failed. Please try again."
+            errorData.detail ||
+              errorData.message ||
+              "Registration failed. Please try again."
           );
         } else {
+          const text = await response.text();
+          console.error("Error response text:", text);
           throw new Error("Registration failed. Server error occurred.");
         }
       }

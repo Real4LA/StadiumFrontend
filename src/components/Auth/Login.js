@@ -52,7 +52,6 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Login request
       const loginUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.LOGIN);
       console.log("Making login request to:", loginUrl);
 
@@ -61,12 +60,13 @@ const Login = () => {
         headers: getDefaultHeaders(),
         credentials: "include",
         mode: "cors",
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
       });
 
-      // Log response details for debugging
       console.log("Response status:", response.status);
-      console.log("Response headers:", Array.from(response.headers.entries()));
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
@@ -84,13 +84,13 @@ const Login = () => {
       localStorage.setItem("accessToken", data.access);
       localStorage.setItem("refreshToken", data.refresh);
 
-      // Get user data
-      const userUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.USER_INFO);
-      console.log("Fetching user data from:", userUrl);
-
-      const userResponse = await fetch(userUrl, {
-        headers: getAuthHeaders(data.access),
-      });
+      // Fetch user info
+      const userResponse = await fetch(
+        getApiUrl(API_CONFIG.ENDPOINTS.AUTH.USER_INFO),
+        {
+          headers: getAuthHeaders(data.access),
+        }
+      );
 
       if (!userResponse.ok) {
         throw new Error("Failed to fetch user data");
@@ -100,8 +100,8 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(userData));
       navigate("/home");
     } catch (error) {
-      setError("An error occurred. Please try again.");
       console.error("Login error:", error);
+      setError(error.message || "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
