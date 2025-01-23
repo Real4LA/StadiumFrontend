@@ -106,16 +106,14 @@ const Signup = () => {
       const signupUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER);
       console.log("Making signup request to:", signupUrl);
 
-      // Prepare the signup data
+      // Prepare the signup data - send phone directly without profile nesting
       const signupData = {
         username: formData.username,
         email: formData.email,
         password: formData.password,
         first_name: formData.firstName,
         last_name: formData.lastName,
-        profile: {
-          phone: formData.phone,
-        },
+        phone: formData.phone, // Send phone directly
       };
 
       console.log("Sending signup data:", signupData);
@@ -140,8 +138,8 @@ const Signup = () => {
             errorMessage = `Username error: ${errorData.username}`;
           } else if (errorData.email) {
             errorMessage = `Email error: ${errorData.email}`;
-          } else if (errorData.profile?.phone) {
-            errorMessage = `Phone error: ${errorData.profile.phone}`;
+          } else if (errorData.phone) {
+            errorMessage = `Phone error: ${errorData.phone}`;
           } else if (errorData.password) {
             errorMessage = `Password error: ${errorData.password}`;
           } else if (errorData.error) {
@@ -160,8 +158,8 @@ const Signup = () => {
       console.log("Signup successful:", data);
 
       setVerificationSent(true);
-      setVerificationEmail(data.email);
-      setUserId(data.userId);
+      setVerificationEmail(data.email || formData.email);
+      setUserId(data.userId || data.id); // Handle both possible field names
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.message || "An error occurred. Please try again.");
