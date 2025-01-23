@@ -5,13 +5,16 @@ import App from "./App";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
-// Handle page refresh by redirecting to the deployed frontend URL
+// Handle page refresh by redirecting to the deployed frontend URL while preserving the path
 if (
   window.performance &&
   window.performance.navigation.type ===
     window.performance.navigation.TYPE_RELOAD
 ) {
-  window.location.replace("https://stadium-frontend.onrender.com/");
+  const currentPath = window.location.pathname;
+  window.location.replace(
+    `https://stadium-frontend.onrender.com${currentPath}`
+  );
 }
 
 const theme = createTheme({
