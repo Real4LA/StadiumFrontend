@@ -18,6 +18,11 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
+import API_CONFIG, {
+  getApiUrl,
+  getDefaultHeaders,
+  getAuthHeaders,
+} from "../../config/api";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -47,36 +52,53 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/token/", {
+      // Login request
+      const loginUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.LOGIN);
+      console.log("Making login request to:", loginUrl);
+
+      const response = await fetch(loginUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getDefaultHeaders(),
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      // Log response details for debugging
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Array.from(response.headers.entries()));
 
-      if (response.ok) {
-        localStorage.setItem("accessToken", data.access);
-        localStorage.setItem("refreshToken", data.refresh);
-
-        const userResponse = await fetch(
-          "http://localhost:8000/api/users/me/",
-          {
-            headers: {
-              Authorization: `Bearer ${data.access}`,
-            },
-          }
-        );
-        const userData = await userResponse.json();
-        localStorage.setItem("user", JSON.stringify(userData));
-        navigate("/home");
-      } else {
-        setError(data.detail || "Login failed. Please check your credentials.");
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.detail || "Login failed. Please check your credentials."
+          );
+        } else {
+          throw new Error("Login failed. Please try again.");
+        }
       }
+
+      const data = await response.json();
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
+
+      // Get user data
+      const userUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.USER_INFO);
+      console.log("Fetching user data from:", userUrl);
+
+      const userResponse = await fetch(userUrl, {
+        headers: getAuthHeaders(data.access),
+      });
+
+      if (!userResponse.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+
+      const userData = await userResponse.json();
+      localStorage.setItem("user", JSON.stringify(userData));
+      navigate("/home");
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError(error.message || "An error occurred. Please try again.");
       console.error("Login error:", error);
     } finally {
       setLoading(false);

@@ -13,8 +13,11 @@ import { useNavigate } from "react-router-dom";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import API_CONFIG, {
+  getApiUrl,
+  getDefaultHeaders,
+  getAuthHeaders,
+} from "../../config/api";
 
 const VerifyCode = ({ email, userId }) => {
   const [verificationCode, setVerificationCode] = useState("");
@@ -46,11 +49,12 @@ const VerifyCode = ({ email, userId }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/users/verify-code/`, {
+      const verifyUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.VERIFY_CODE);
+      console.log("Making verification request to:", verifyUrl);
+
+      const response = await fetch(verifyUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getDefaultHeaders(),
         body: JSON.stringify({
           code: verificationCode.trim(),
           userId: userId,
@@ -60,21 +64,20 @@ const VerifyCode = ({ email, userId }) => {
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          throw new Error(data.error || "Verification failed");
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Verification failed");
         } else {
           throw new Error("Verification failed");
         }
       }
 
       const data = await response.json();
-      // Store tokens and redirect
       localStorage.setItem("accessToken", data.tokens.access);
       localStorage.setItem("refreshToken", data.tokens.refresh);
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/home");
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError(error.message || "An error occurred. Please try again.");
       setVerificationCode(""); // Clear the input on error
     } finally {
       setLoading(false);
@@ -88,28 +91,32 @@ const VerifyCode = ({ email, userId }) => {
     setCountdown(60); // 60 seconds cooldown
 
     try {
-      const response = await fetch(`${API_URL}/users/resend-code/`, {
+      const resendUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.RESEND_CODE);
+      console.log("Making resend code request to:", resendUrl);
+
+      const response = await fetch(resendUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getDefaultHeaders(),
         body: JSON.stringify({
           userId: userId,
         }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setError("New verification code sent to your email");
-        setVerificationCode(""); // Clear the input when new code is sent
-      } else {
-        setError(data.error || "Failed to resend code");
-        setResendDisabled(false);
-        setCountdown(0);
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Failed to resend code");
+        } else {
+          throw new Error("Failed to resend code");
+        }
       }
+
+      const data = await response.json();
+      setError("New verification code sent to your email");
+      setVerificationCode(""); // Clear the input when new code is sent
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError(error.message || "An error occurred. Please try again.");
       setResendDisabled(false);
       setCountdown(0);
     } finally {

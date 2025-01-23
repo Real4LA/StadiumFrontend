@@ -18,20 +18,7 @@ import Footer from "../Layout/Footer";
 import LinearProgress from "@mui/material/LinearProgress";
 import VerifyCode from "./VerifyCode";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
-
-// Ensure we have a valid API URL
-const DEFAULT_API_URL = "https://stadiumbackend.onrender.com/api";
-const API_URL = process.env.REACT_APP_API_URL || DEFAULT_API_URL;
-
-// Ensure the URL is properly formatted
-const getFullApiUrl = (endpoint) => {
-  const baseUrl = API_URL.endsWith("/") ? API_URL.slice(0, -1) : API_URL;
-  const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
-  return `${baseUrl}/${cleanEndpoint}`;
-};
-
-console.log("Environment API URL:", process.env.REACT_APP_API_URL);
-console.log("Using API URL:", API_URL);
+import API_CONFIG, { getApiUrl, getDefaultHeaders } from "../../config/api";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -115,17 +102,13 @@ const Signup = () => {
       return;
     }
 
-    const apiUrl = getFullApiUrl("users/");
-    console.log("Full request URL:", apiUrl);
+    const signupUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER);
+    console.log("Making signup request to:", signupUrl);
 
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(signupUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Origin: window.location.origin,
-        },
+        headers: getDefaultHeaders(),
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
@@ -140,20 +123,27 @@ const Signup = () => {
       console.log("Response status:", response.status);
       console.log("Response headers:", Array.from(response.headers.entries()));
 
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.detail || "Registration failed. Please try again."
+          );
+        } else {
+          throw new Error("Registration failed. Server error occurred.");
+        }
+      }
+
       // Check if response is empty
       const text = await response.text();
-      console.log("Response text:", text); // Debug log
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      console.log("Response text:", text);
 
       if (!text) {
         // If we get a 200 OK but empty response, assume success
         console.log("Empty but successful response");
         setVerificationSent(true);
         setVerificationEmail(formData.email);
-        // Use a temporary userId if not provided
         setUserId(formData.username);
         return;
       }
