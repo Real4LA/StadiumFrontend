@@ -112,6 +112,7 @@ const VerifyCode = ({ email, userId }) => {
     setCountdown(60); // 60 seconds cooldown
 
     try {
+      console.log("Sending resend code request with userId:", userId);
       const resendUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.RESEND_CODE);
       console.log("Making resend code request to:", resendUrl);
       console.log("Resend data:", { userId });
