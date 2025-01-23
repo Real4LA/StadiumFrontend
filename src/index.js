@@ -5,6 +5,15 @@ import App from "./App";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+// Handle page refresh by redirecting to home page
+if (
+  window.performance &&
+  window.performance.navigation.type ===
+    window.performance.navigation.TYPE_RELOAD
+) {
+  window.location.replace("/");
+}
+
 const theme = createTheme({
   palette: {
     primary: {

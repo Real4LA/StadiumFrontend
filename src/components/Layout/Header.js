@@ -10,14 +10,22 @@ import {
   MenuItem,
   alpha,
 } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
-const Header = ({ setCurrentSection, currentSection }) => {
+const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const { user, logout, isAuthenticated } = useAuth();
+
+  // Check if we're on login or signup pages
+  const isAuthPage = ["/login", "/signup", "/verify"].some((path) =>
+    location.pathname.startsWith(path)
+  );
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -30,62 +38,65 @@ const Header = ({ setCurrentSection, currentSection }) => {
   const handleLogout = () => {
     handleClose();
     logout();
-    setCurrentSection("login");
   };
 
   const handleProfile = () => {
     handleClose();
-    setCurrentSection("profile");
+    navigate("/profile");
   };
-
-  const handleLogoClick = () => {
-    setCurrentSection("home");
-  };
-
-  const isAuthPage =
-    currentSection === "login" ||
-    currentSection === "signup" ||
-    currentSection === "verify";
 
   return (
     <AppBar
       position="fixed"
       sx={{
-        bgcolor: "white",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        bgcolor: "#2d4d2d",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
       }}
     >
       <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          onClick={handleLogoClick}
-          sx={{ color: "#2d4d2d" }}
-        >
-          <SportsSoccerIcon />
-        </IconButton>
+        {/* Logo and Brand */}
+        <SportsSoccerIcon
+          sx={{
+            display: "flex",
+            mr: 1,
+            fontSize: 28,
+            color: alpha("#fff", 0.9),
+          }}
+        />
         <Typography
           variant="h6"
+          noWrap
           component="div"
           sx={{
-            flexGrow: 1,
-            color: "#1a1a1a",
+            mr: 2,
+            display: "flex",
+            fontFamily: "monospace",
             fontWeight: 700,
+            letterSpacing: ".3rem",
+            color: alpha("#fff", 0.9),
+            textDecoration: "none",
             cursor: "pointer",
+            fontSize: "1.25rem",
+            "&:hover": {
+              color: "#fff",
+            },
           }}
-          onClick={handleLogoClick}
+          onClick={() => navigate("/")}
         >
-          Stadium
+          STADIUM
         </Typography>
 
+        {/* Spacer */}
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* User Profile - Only show if authenticated and not on auth pages */}
         {isAuthenticated && !isAuthPage && (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography
+              variant="body1"
               sx={{
-                mr: 2,
-                color: "#4a4a4a",
+                display: { xs: "none", sm: "block" },
+                color: alpha("#fff", 0.9),
                 fontWeight: 500,
               }}
             >
@@ -98,9 +109,9 @@ const Header = ({ setCurrentSection, currentSection }) => {
               aria-haspopup="true"
               onClick={handleMenu}
               sx={{
-                color: "#2d4d2d",
+                color: alpha("#fff", 0.9),
                 "&:hover": {
-                  bgcolor: alpha("#2d4d2d", 0.1),
+                  bgcolor: alpha("#fff", 0.1),
                 },
               }}
             >
@@ -120,40 +131,26 @@ const Header = ({ setCurrentSection, currentSection }) => {
               }}
               open={Boolean(anchorEl)}
               onClose={handleClose}
+              PaperProps={{
+                sx: {
+                  mt: 1,
+                  bgcolor: "#f5f5f5",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  "& .MuiMenuItem-root": {
+                    color: "#1a1a1a",
+                    fontSize: "0.95rem",
+                    py: 1,
+                    px: 2,
+                    "&:hover": {
+                      bgcolor: alpha("#2d4d2d", 0.1),
+                    },
+                  },
+                },
+              }}
             >
               <MenuItem onClick={handleProfile}>Profile</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
-          </Box>
-        )}
-
-        {!isAuthenticated && !isAuthPage && (
-          <Box>
-            <Button
-              onClick={() => setCurrentSection("login")}
-              sx={{
-                color: "#2d4d2d",
-                textTransform: "none",
-                fontWeight: 500,
-                mr: 2,
-              }}
-            >
-              Login
-            </Button>
-            <Button
-              onClick={() => setCurrentSection("signup")}
-              variant="contained"
-              sx={{
-                bgcolor: "#2d4d2d",
-                textTransform: "none",
-                fontWeight: 500,
-                "&:hover": {
-                  bgcolor: "#1a331a",
-                },
-              }}
-            >
-              Sign Up
-            </Button>
           </Box>
         )}
       </Toolbar>
