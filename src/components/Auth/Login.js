@@ -66,39 +66,42 @@ const Login = () => {
         }),
       });
 
-      console.log("Response status:", response.status);
+      const responseData = await response.text();
+      console.log("Raw response:", responseData);
 
       if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          throw new Error(
-            errorData.detail || "Login failed. Please check your credentials."
-          );
+        try {
+          const errorData = JSON.parse(responseData);
+          throw new Error(errorData.detail || "Invalid credentials");
+        } catch (e) {
+          throw new Error("Login failed. Please check your credentials.");
+        }
+      }
+
+      const data = JSON.parse(responseData);
+
+      if (data.access) {
+        localStorage.setItem("accessToken", data.access);
+        localStorage.setItem("refreshToken", data.refresh);
+
+        // Get user data after successful login
+        const userResponse = await fetch(
+          getApiUrl(API_CONFIG.ENDPOINTS.AUTH.USER_INFO),
+          {
+            headers: getAuthHeaders(data.access),
+          }
+        );
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          localStorage.setItem("user", JSON.stringify(userData));
+          navigate("/home");
         } else {
-          throw new Error("Login failed. Please try again.");
+          throw new Error("Failed to fetch user data");
         }
+      } else {
+        throw new Error("Invalid response from server");
       }
-
-      const data = await response.json();
-      localStorage.setItem("accessToken", data.access);
-      localStorage.setItem("refreshToken", data.refresh);
-
-      // Fetch user info
-      const userResponse = await fetch(
-        getApiUrl(API_CONFIG.ENDPOINTS.AUTH.USER_INFO),
-        {
-          headers: getAuthHeaders(data.access),
-        }
-      );
-
-      if (!userResponse.ok) {
-        throw new Error("Failed to fetch user data");
-      }
-
-      const userData = await userResponse.json();
-      localStorage.setItem("user", JSON.stringify(userData));
-      navigate("/home");
     } catch (error) {
       console.error("Login error:", error);
       setError(error.message || "An error occurred. Please try again.");

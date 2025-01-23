@@ -124,11 +124,9 @@ const Signup = () => {
         first_name: formData.firstName,
         last_name: formData.lastName,
         profile: {
-          phone: formData.phone, // Changed to match the backend structure
+          phone: formData.phone,
         },
       };
-
-      console.log("Sending signup data:", signupData);
 
       const response = await fetch(signupUrl, {
         method: "POST",
@@ -141,12 +139,6 @@ const Signup = () => {
         body: JSON.stringify(signupData),
       });
 
-      console.log("Response status:", response.status);
-      console.log(
-        "Response headers:",
-        Object.fromEntries(response.headers.entries())
-      );
-
       const responseData = await response.text();
       console.log("Raw response:", responseData);
 
@@ -155,54 +147,31 @@ const Signup = () => {
           const errorData = JSON.parse(responseData);
           console.error("Parsed error data:", errorData);
 
+          // Handle specific error cases
+          if (errorData.profile?.phone) {
+            throw new Error(`Phone number error: ${errorData.profile.phone}`);
+          }
+
           const errorMessage =
             errorData.detail ||
-            errorData.message ||
-            (typeof errorData === "object"
-              ? Object.entries(errorData)
-                  .map(([key, value]) => `${key}: ${value}`)
-                  .join(", ")
-              : "Registration failed");
+            errorData.error ||
+            "Registration failed. Please try again.";
 
           throw new Error(errorMessage);
         } catch (e) {
-          console.error("Error parsing response:", e);
-          throw new Error(
-            responseData || "Registration failed. Please try again."
-          );
+          setError(e.message);
+          return;
         }
       }
 
-      // Check if response is empty
-      if (!responseData) {
-        // If we get a 200 OK but empty response, assume success
-        console.log("Empty but successful response");
-        setVerificationSent(true);
-        setVerificationEmail(formData.email);
-        setUserId(formData.username);
-        return;
-      }
-
-      // Try to parse JSON
-      try {
-        const data = JSON.parse(responseData);
-        setVerificationSent(true);
-        setVerificationEmail(data.email || formData.email);
-        setUserId(data.userId || formData.username);
-      } catch (e) {
-        console.error("Failed to parse response:", responseData);
-        // If JSON parsing fails but we got a 200 OK, still treat it as success
-        if (response.ok) {
-          setVerificationSent(true);
-          setVerificationEmail(formData.email);
-          setUserId(formData.username);
-        } else {
-          throw new Error("Invalid response format from server");
-        }
-      }
+      // Success case
+      const data = JSON.parse(responseData);
+      setVerificationSent(true);
+      setVerificationEmail(data.email || formData.email);
+      setUserId(data.id || data.username);
     } catch (error) {
-      setError(error.message || "An error occurred. Please try again.");
       console.error("Registration error:", error);
+      setError(error.message || "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
