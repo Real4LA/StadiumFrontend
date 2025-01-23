@@ -90,6 +90,20 @@ const Signup = () => {
     setError("");
     setLoading(true);
 
+    // Add debug logging
+    console.log("API_CONFIG.BASE_URL:", API_CONFIG.BASE_URL);
+    console.log(
+      "API_CONFIG.ENDPOINTS.AUTH.REGISTER:",
+      API_CONFIG.ENDPOINTS.AUTH.REGISTER
+    );
+
+    const signupUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER);
+    console.log("Complete signup URL:", signupUrl);
+
+    console.log("API Config:", API_CONFIG);
+    console.log("Making request to:", signupUrl);
+    console.log("With headers:", getDefaultHeaders());
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -102,13 +116,14 @@ const Signup = () => {
       return;
     }
 
-    const signupUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER);
-    console.log("Making signup request to:", signupUrl);
-
     try {
       const response = await fetch(signupUrl, {
         method: "POST",
-        headers: getDefaultHeaders(),
+        headers: {
+          ...getDefaultHeaders(),
+          Origin: window.location.origin,
+        },
+        credentials: "include",
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
