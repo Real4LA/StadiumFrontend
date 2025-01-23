@@ -117,56 +117,64 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch(signupUrl, {
-        method: "POST",
-        headers: getDefaultHeaders(),
-        credentials: "include",
-        mode: "cors",
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone_number: formData.phone,
-        }),
-      });
-
-      console.log("Request payload:", {
+      const signupData = {
         username: formData.username,
         email: formData.email,
         password: formData.password,
         first_name: formData.firstName,
         last_name: formData.lastName,
-        phone_number: formData.phone,
+        profile: {
+          phone: formData.phone, // Changed to match the backend structure
+        },
+      };
+
+      console.log("Sending signup data:", signupData);
+
+      const response = await fetch(signupUrl, {
+        method: "POST",
+        headers: {
+          ...getDefaultHeaders(),
+          Accept: "application/json",
+        },
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify(signupData),
       });
 
       console.log("Response status:", response.status);
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
+      const responseData = await response.text();
+      console.log("Raw response:", responseData);
 
       if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          console.error("Server error response:", errorData);
-          throw new Error(
+        try {
+          const errorData = JSON.parse(responseData);
+          console.error("Parsed error data:", errorData);
+
+          const errorMessage =
             errorData.detail ||
-              errorData.message ||
-              (typeof errorData === "object"
-                ? JSON.stringify(errorData)
-                : "Registration failed. Please try again.")
+            errorData.message ||
+            (typeof errorData === "object"
+              ? Object.entries(errorData)
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join(", ")
+              : "Registration failed");
+
+          throw new Error(errorMessage);
+        } catch (e) {
+          console.error("Error parsing response:", e);
+          throw new Error(
+            responseData || "Registration failed. Please try again."
           );
-        } else {
-          const text = await response.text();
-          console.error("Error response text:", text);
-          throw new Error("Registration failed. Server error occurred.");
         }
       }
 
       // Check if response is empty
-      const text = await response.text();
-      console.log("Response text:", text);
-
-      if (!text) {
+      if (!responseData) {
         // If we get a 200 OK but empty response, assume success
         console.log("Empty but successful response");
         setVerificationSent(true);
@@ -177,12 +185,12 @@ const Signup = () => {
 
       // Try to parse JSON
       try {
-        const data = JSON.parse(text);
+        const data = JSON.parse(responseData);
         setVerificationSent(true);
         setVerificationEmail(data.email || formData.email);
         setUserId(data.userId || formData.username);
       } catch (e) {
-        console.error("Failed to parse response:", text);
+        console.error("Failed to parse response:", responseData);
         // If JSON parsing fails but we got a 200 OK, still treat it as success
         if (response.ok) {
           setVerificationSent(true);
