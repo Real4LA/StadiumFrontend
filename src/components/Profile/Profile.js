@@ -24,7 +24,7 @@ import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
 import { API_CONFIG, getApiUrl, getAuthHeaders } from "../../config/api";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
