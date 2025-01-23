@@ -46,29 +46,44 @@ const Profile = () => {
       const token = localStorage.getItem("accessToken");
       console.log("Using token:", token ? "Token exists" : "No token found");
 
-      const response = await fetch(
-        getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.MY_BOOKINGS),
-        {
-          headers: getAuthHeaders(token),
-        }
-      );
+      const bookingsUrl = getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.MY_BOOKINGS);
+      console.log("Fetching from URL:", bookingsUrl);
+
+      const response = await fetch(bookingsUrl, {
+        headers: getAuthHeaders(token),
+      });
 
       console.log("Response status:", response.status);
+      const responseText = await response.text();
+      console.log("Raw response:", responseText);
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("Received bookings:", data);
+        const data = JSON.parse(responseText);
+        console.log("Parsed bookings data:", data);
+
+        if (!data.bookings) {
+          console.log("No bookings found in response");
+          setUpcomingReservations([]);
+          return;
+        }
 
         // Sort bookings by start time
-        const sortedBookings = (data.bookings || []).sort((a, b) => {
+        const sortedBookings = data.bookings.sort((a, b) => {
           return new Date(a.start_time) - new Date(b.start_time);
         });
 
+        console.log("Sorted bookings:", sortedBookings);
         setUpcomingReservations(sortedBookings);
       } else {
-        const errorData = await response.json();
-        console.error("Error response:", errorData);
-        setError(errorData.error || "Failed to fetch reservations");
+        let errorMessage = "Failed to fetch reservations";
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          console.error("Error parsing error response:", e);
+        }
+        console.error("Error fetching reservations:", errorMessage);
+        setError(errorMessage);
       }
     } catch (error) {
       console.error("Network error:", error);
