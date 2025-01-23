@@ -58,8 +58,6 @@ const Login = () => {
       const response = await fetch(loginUrl, {
         method: "POST",
         headers: getDefaultHeaders(),
-        credentials: "include",
-        mode: "cors",
         body: JSON.stringify({
           username: formData.username,
           password: formData.password,
@@ -70,25 +68,38 @@ const Login = () => {
       console.log("Raw response:", responseData);
 
       if (!response.ok) {
+        let errorMessage = "Login failed. Please check your credentials.";
         try {
           const errorData = JSON.parse(responseData);
-          throw new Error(errorData.detail || "Invalid credentials");
+          errorMessage = errorData.error || errorData.detail || errorMessage;
         } catch (e) {
-          throw new Error("Login failed. Please check your credentials.");
+          console.error("Error parsing error response:", e);
         }
+        throw new Error(errorMessage);
       }
 
       const data = JSON.parse(responseData);
+      console.log("Login successful:", data);
 
-      if (data.access) {
+      // Store tokens and user data
+      if (data.tokens) {
+        localStorage.setItem("accessToken", data.tokens.access);
+        localStorage.setItem("refreshToken", data.tokens.refresh);
+      } else if (data.access) {
         localStorage.setItem("accessToken", data.access);
         localStorage.setItem("refreshToken", data.refresh);
+      }
 
-        // Get user data after successful login
+      // Store user data if available
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/home");
+      } else {
+        // If user data not included in response, fetch it
         const userResponse = await fetch(
           getApiUrl(API_CONFIG.ENDPOINTS.AUTH.USER_INFO),
           {
-            headers: getAuthHeaders(data.access),
+            headers: getAuthHeaders(data.access || data.tokens.access),
           }
         );
 
@@ -99,8 +110,6 @@ const Login = () => {
         } else {
           throw new Error("Failed to fetch user data");
         }
-      } else {
-        throw new Error("Invalid response from server");
       }
     } catch (error) {
       console.error("Login error:", error);
