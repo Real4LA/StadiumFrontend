@@ -1,5 +1,4 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { useState } from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Home from "./components/Home/Home";
@@ -12,33 +11,46 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
 function App() {
+  const [currentSection, setCurrentSection] = useState("home");
+
+  const renderSection = () => {
+    switch (currentSection) {
+      case "home":
+        return (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        );
+      case "login":
+        return <Login setCurrentSection={setCurrentSection} />;
+      case "signup":
+        return <Signup setCurrentSection={setCurrentSection} />;
+      case "profile":
+        return (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        );
+      case "verify":
+        return <VerifyCode setCurrentSection={setCurrentSection} />;
+      default:
+        return (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        );
+    }
+  };
+
   return (
     <AuthProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <div className="App">
-          <Header />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/verify" element={<VerifyCode />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Header
+            setCurrentSection={setCurrentSection}
+            currentSection={currentSection}
+          />
+          {renderSection()}
         </div>
       </LocalizationProvider>
     </AuthProvider>
