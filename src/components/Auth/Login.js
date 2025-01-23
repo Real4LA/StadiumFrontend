@@ -59,6 +59,8 @@ const Login = () => {
       const response = await fetch(loginUrl, {
         method: "POST",
         headers: getDefaultHeaders(),
+        credentials: "include",
+        mode: "cors",
         body: JSON.stringify(formData),
       });
 
@@ -98,7 +100,7 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(userData));
       navigate("/home");
     } catch (error) {
-      setError(error.message || "An error occurred. Please try again.");
+      setError("An error occurred. Please try again.");
       console.error("Login error:", error);
     } finally {
       setLoading(false);
