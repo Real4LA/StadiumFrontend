@@ -5,6 +5,11 @@ import App from "./App";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+// Force redirect to main URL on refresh
+if (window.location.href !== "https://stadium-frontend.onrender.com/") {
+  window.location.href = "https://stadium-frontend.onrender.com/";
+}
+
 const theme = createTheme({
   palette: {
     primary: {
