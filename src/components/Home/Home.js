@@ -40,7 +40,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { debounce } from "@mui/material/utils";
-import { API_CONFIG, getApiUrl, getAuthHeaders } from "../config/api";
+import { API_CONFIG, getApiUrl, getAuthHeaders } from "../../config/api";
 
 const testimonials = [
   {
