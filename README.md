@@ -1,70 +1,220 @@
-# Getting Started with Create React App
+# Tottenham Stadium Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive React application for managing stadium bookings and reservations. This application provides a seamless user experience for booking stadium slots, managing reservations, and handling user authentication.
 
-## Available Scripts
+## 🌟 Features
 
-In the project directory, you can run:
+- User Authentication (Login/Register/Password Reset)
+- Email Verification System
+- Protected Routes
+- Stadium Slot Booking
+- Reservation Management
+- Responsive Material-UI Design
+- JWT Token Authentication
+- Real-time Availability Updates
 
-### `npm start`
+## 🛠️ Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React 18
+- Material-UI (MUI)
+- React Router v6
+- JWT Authentication
+- Axios for API calls
+- Date-fns for date manipulation
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js (v18.17.0 or higher)
+- npm (v9.0.0 or higher)
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```bash
+   git clone <repository-url>
+   cd frontend-stadium
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies:
 
-### `npm run eject`
+   ```bash
+   npm install
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. Create environment files:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   ```bash
+   # .env.development
+   REACT_APP_API_URL=http://localhost:8000/api
+   NODE_ENV=development
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   # .env.production
+   REACT_APP_API_URL=https://your-backend-url.com/api
+   NODE_ENV=production
+   ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4. Start the development server:
+   ```bash
+   npm start
+   ```
 
-## Learn More
+## 📦 Building for Production
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This creates a `build` directory with optimized production files.
 
-### Code Splitting
+## 🌐 Deployment Guide
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Render
 
-### Analyzing the Bundle Size
+1. Create a new Static Site on Render
+2. Connect your GitHub repository
+3. Configure build settings:
+   - Build Command: `npm install && npm run build`
+   - Publish Directory: `build`
+4. Add environment variables in Render dashboard
+5. Deploy
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Vercel
 
-### Making a Progressive Web App
+1. Install Vercel CLI:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+   ```bash
+   npm install -g vercel
+   ```
 
-### Advanced Configuration
+2. Deploy:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+   ```bash
+   vercel
+   ```
 
-### Deployment
+3. For production:
+   ```bash
+   vercel --prod
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Oracle Cloud
 
-### `npm run build` fails to minify
+1. Create an Oracle Cloud Infrastructure (OCI) account
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+2. Set up an Oracle Container Instance:
+
+   ```bash
+   # Build Docker image
+   docker build -t stadium-frontend .
+
+   # Push to Oracle Container Registry
+   docker tag stadium-frontend <region>.ocir.io/<tenancy>/<repo>/stadium-frontend
+   docker push <region>.ocir.io/<tenancy>/<repo>/stadium-frontend
+   ```
+
+3. Deploy using Oracle Cloud Console:
+   - Create a Container Instance
+   - Select your pushed image
+   - Configure networking and ports
+   - Launch instance
+
+### AWS Amplify
+
+1. Install AWS Amplify CLI:
+
+   ```bash
+   npm install -g @aws-amplify/cli
+   ```
+
+2. Configure Amplify:
+
+   ```bash
+   amplify configure
+   ```
+
+3. Initialize Amplify in your project:
+
+   ```bash
+   amplify init
+   ```
+
+4. Deploy:
+   ```bash
+   amplify push
+   amplify publish
+   ```
+
+### Netlify
+
+1. Install Netlify CLI:
+
+   ```bash
+   npm install -g netlify-cli
+   ```
+
+2. Deploy:
+
+   ```bash
+   netlify deploy
+   ```
+
+3. For production:
+   ```bash
+   netlify deploy --prod
+   ```
+
+## 🔧 Environment Variables
+
+Required environment variables:
+
+```env
+REACT_APP_API_URL=<backend-api-url>
+NODE_ENV=<development/production>
+```
+
+## 📝 Additional Configuration
+
+### CORS Configuration
+
+Ensure your backend CORS settings match your frontend domain:
+
+```javascript
+// Example backend CORS configuration
+CORS_ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  "https://your-production-domain.com",
+];
+```
+
+### Static File Serving
+
+For hosting services that don't automatically handle client-side routing:
+
+1. Add a `_redirects` file (Netlify):
+
+   ```
+   /* /index.html 200
+   ```
+
+2. Or add a `vercel.json` (Vercel):
+   ```json
+   {
+     "rewrites": [
+       {
+         "source": "/(.*)",
+         "destination": "/index.html"
+       }
+     ]
+   }
+   ```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
