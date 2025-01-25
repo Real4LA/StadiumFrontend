@@ -1,17 +1,16 @@
 // API Configuration
-export const API_CONFIG = {
+const API_CONFIG = {
   BASE_URL:
-    process.env.REACT_APP_API_URL || "https://stadiumbackend.onrender.com/api",
+    process.env.REACT_APP_API_URL || "https://stadiumbackend.onrender.com",
   ENDPOINTS: {
     AUTH: {
       LOGIN: "auth/login/",
       REGISTER: "auth/register/",
-      VERIFY_CODE: "users/verify-code/",
-      RESEND_CODE: "users/resend-code/",
-      USER_INFO: "users/me/",
-      REFRESH_TOKEN: "token/refresh/",
+      VERIFY_CODE: "auth/verify-code/",
+      RESEND_CODE: "auth/resend-code/",
       REQUEST_PASSWORD_RESET: "auth/password-reset/",
       RESET_PASSWORD: "auth/password-reset/confirm/",
+      REFRESH_TOKEN: "auth/token/refresh/",
     },
     CALENDAR: {
       AVAILABLE_SLOTS: "calendar/available_slots/",
