@@ -45,20 +45,20 @@ import { API_CONFIG, getApiUrl, getAuthHeaders } from "../../config/api";
 const testimonials = [
   {
     name: "John Doe",
-    rating: 5,
+    rating: 4.5,
     comment:
       "Best stadium I've ever played in! Great facilities and excellent service.",
     avatar: "JD",
   },
   {
-    name: "Sarah Clarck",
-    rating: 4,
+    name: "Med Alaa Elabed",
+    rating: 5,
     comment: "Very well maintained and professional staff. Highly recommended!",
-    avatar: "SS",
+    avatar: "ME",
   },
   {
     name: "Mike Johnson",
-    rating: 5,
+    rating: 4.7,
     comment: "Perfect for our weekly matches. Booking process is super easy.",
     avatar: "MJ",
   },
@@ -1130,7 +1130,7 @@ const Home = () => {
                   }}
                 >
                   <Typography variant="body1">
-                    Email: contact@tottenhamstadium.com
+                    Email: mohamedalaaelabed@gmail.com
                   </Typography>
                 </Link>
                 <Link
@@ -1169,7 +1169,7 @@ const Home = () => {
                 </Typography>
                 <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
                   <IconButton
-                    href="https://facebook.com"
+                    href="https://www.facebook.com/alaa.elabed.73/"
                     target="_blank"
                     sx={{
                       color: "#4a4a4a",
@@ -1179,7 +1179,7 @@ const Home = () => {
                     <FacebookIcon />
                   </IconButton>
                   <IconButton
-                    href="https://instagram.com"
+                    href="https://instagram.com/4la.exe/"
                     target="_blank"
                     sx={{
                       color: "#4a4a4a",
@@ -1189,7 +1189,7 @@ const Home = () => {
                     <InstagramIcon />
                   </IconButton>
                   <IconButton
-                    href="https://twitter.com"
+                    href="https://x.com/4la28"
                     target="_blank"
                     sx={{
                       color: "#4a4a4a",
