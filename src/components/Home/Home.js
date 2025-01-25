@@ -45,7 +45,7 @@ import { API_CONFIG, getApiUrl, getAuthHeaders } from "../../config/api";
 const testimonials = [
   {
     name: "John Doe",
-    rating: 4.5,
+    rating: 4.2,
     comment:
       "Best stadium I've ever played in! Great facilities and excellent service.",
     avatar: "JD",
@@ -58,7 +58,7 @@ const testimonials = [
   },
   {
     name: "Mike Johnson",
-    rating: 4.7,
+    rating: 4,
     comment: "Perfect for our weekly matches. Booking process is super easy.",
     avatar: "MJ",
   },
