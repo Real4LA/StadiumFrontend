@@ -17,7 +17,7 @@ import Footer from "../Layout/Footer";
 import LinearProgress from "@mui/material/LinearProgress";
 import VerifyCode from "./VerifyCode";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
-import API_CONFIG, { getApiUrl, getDefaultHeaders } from "../../config/api";
+import { API_CONFIG, getApiUrl, getDefaultHeaders } from "../../config/api";
 import { useAuth } from "../../context/AuthContext";
 
 const Signup = () => {

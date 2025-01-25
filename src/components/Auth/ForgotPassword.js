@@ -14,7 +14,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
-import API_CONFIG, { getApiUrl, getDefaultHeaders } from "../../config/api";
+import { API_CONFIG, getApiUrl, getDefaultHeaders } from "../../config/api";
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1);
