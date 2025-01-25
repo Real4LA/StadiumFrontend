@@ -45,20 +45,20 @@ import { API_CONFIG, getApiUrl, getAuthHeaders } from "../../config/api";
 const testimonials = [
   {
     name: "John Doe",
-    rating: 5,
+    rating: 4.2,
     comment:
       "Best stadium I've ever played in! Great facilities and excellent service.",
     avatar: "JD",
   },
   {
-    name: "Sarah Clarck",
-    rating: 4,
+    name: "Med Alaa Elabed",
+    rating: 5,
     comment: "Very well maintained and professional staff. Highly recommended!",
-    avatar: "SS",
+    avatar: "ME",
   },
   {
     name: "Mike Johnson",
-    rating: 5,
+    rating: 4,
     comment: "Perfect for our weekly matches. Booking process is super easy.",
     avatar: "MJ",
   },
@@ -100,21 +100,21 @@ const Home = () => {
     () => [
       {
         id: 1,
-        name: "Tottenham Stadium - Main Field",
+        name: "Main Field",
         calendarId:
           "433adde78c577df19c67e7d18b2e932c8aa5b60b05098687a13a227712510f5d@group.calendar.google.com",
         color: "#2d4d2d",
       },
       {
         id: 2,
-        name: "Tottenham Stadium - Training Ground",
+        name: "Academy Stadium",
         calendarId:
           "c0981f9f07e185a73808a13deb4e2648915ff7f9a28cfe35bb212ff87115a435@group.calendar.google.com",
         color: "#4a2d4d",
       },
       {
         id: 3,
-        name: "Tottenham Stadium - Youth Academy",
+        name: "FG Field",
         calendarId:
           "a233987f0f4b9c95f17c3abf7055ab3287b7765b2c24c02968360fe68a3f2071@group.calendar.google.com",
         color: "#2d3d4d",
@@ -130,7 +130,7 @@ const Home = () => {
         if (refreshToken) {
           try {
             const refreshResponse = await fetch(
-              "http://localhost:8000/api/token/refresh/",
+              getApiUrl(API_CONFIG.ENDPOINTS.AUTH.REFRESH_TOKEN),
               {
                 method: "POST",
                 headers: {
@@ -1100,7 +1100,7 @@ const Home = () => {
                   Contact Us
                 </Typography>
                 <Link
-                  href="tel:+21600000000"
+                  href="tel:+21656107172"
                   sx={{
                     color: "#4a4a4a",
                     textDecoration: "none",
@@ -1113,11 +1113,11 @@ const Home = () => {
                   }}
                 >
                   <Typography variant="body1">
-                    Phone: +216 XX XXX XXX
+                    Phone: +216 56 107 172
                   </Typography>
                 </Link>
                 <Link
-                  href="mailto:contact@tottenhamstadium.com"
+                  href="mailto:mohamedalaaelabed@gmail.com"
                   sx={{
                     color: "#4a4a4a",
                     textDecoration: "none",
@@ -1130,7 +1130,7 @@ const Home = () => {
                   }}
                 >
                   <Typography variant="body1">
-                    Email: contact@tottenhamstadium.com
+                    Email: mohamedalaaelabed@gmail.com
                   </Typography>
                 </Link>
                 <Link
@@ -1169,7 +1169,7 @@ const Home = () => {
                 </Typography>
                 <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
                   <IconButton
-                    href="https://facebook.com"
+                    href="https://www.facebook.com/alaa.elabed.73/"
                     target="_blank"
                     sx={{
                       color: "#4a4a4a",
@@ -1179,7 +1179,7 @@ const Home = () => {
                     <FacebookIcon />
                   </IconButton>
                   <IconButton
-                    href="https://instagram.com"
+                    href="https://instagram.com/4la.exe/"
                     target="_blank"
                     sx={{
                       color: "#4a4a4a",
@@ -1189,7 +1189,7 @@ const Home = () => {
                     <InstagramIcon />
                   </IconButton>
                   <IconButton
-                    href="https://twitter.com"
+                    href="https://x.com/4la28"
                     target="_blank"
                     sx={{
                       color: "#4a4a4a",
