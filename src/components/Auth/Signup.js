@@ -175,6 +175,28 @@ const Signup = () => {
         setVerificationEmail(data.user.email);
         setUserId(data.user.id);
         console.log("Setting user ID:", data.user.id);
+
+        // Automatically trigger resend code
+        try {
+          const resendUrl = getApiUrl(API_CONFIG.ENDPOINTS.AUTH.RESEND_CODE);
+          console.log("Making resend code request to:", resendUrl);
+
+          const resendResponse = await fetch(resendUrl, {
+            method: "POST",
+            headers: getDefaultHeaders(),
+            body: JSON.stringify({
+              userId: data.user.id,
+            }),
+          });
+
+          if (!resendResponse.ok) {
+            console.error("Failed to resend verification code");
+          } else {
+            console.log("Verification code resent successfully");
+          }
+        } catch (resendError) {
+          console.error("Error resending verification code:", resendError);
+        }
       } else {
         throw new Error("Invalid response format from server");
       }
