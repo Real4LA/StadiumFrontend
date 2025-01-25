@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       logout();
       return null;
     }
-  }, []);
+  }, [logout]);
 
   const checkAuth = useCallback(async () => {
     try {

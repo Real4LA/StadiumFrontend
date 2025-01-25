@@ -33,11 +33,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import {
-  LocalizationProvider,
-  DatePicker,
-  StaticDatePicker,
-} from "@mui/x-date-pickers";
+import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
 import { format } from "date-fns";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Footer from "../Layout/Footer";
@@ -88,7 +84,6 @@ const features = [
 ];
 
 const Home = () => {
-  const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
