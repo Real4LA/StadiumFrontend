@@ -426,7 +426,7 @@ const Profile = () => {
                     <ListItemText
                       primary={
                         <Typography variant="h6" color="primary">
-                          {reservation.stadium_name || "Stadium"}
+                          {reservation.stadiumName || "Stadium"}
                         </Typography>
                       }
                       secondary={
@@ -528,7 +528,7 @@ const Profile = () => {
               >
                 Are you sure you want to cancel your reservation at{" "}
                 <Box component="span" sx={{ fontWeight: 600 }}>
-                  {selectedReservation?.stadium_name}
+                  {selectedReservation?.stadiumName}
                 </Box>{" "}
                 for{" "}
                 <Box component="span" sx={{ fontWeight: 600 }}>
