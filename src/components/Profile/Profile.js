@@ -412,93 +412,58 @@ const Profile = () => {
                 </Paper>
               )}
               <List>
-                {upcomingReservations.length > 0 ? (
-                  upcomingReservations.map((reservation, index) => (
-                    <ListItem
-                      key={index}
-                      sx={{
-                        px: 0,
-                        borderBottom:
-                          index !== upcomingReservations.length - 1
-                            ? "1px solid rgba(0,0,0,0.1)"
-                            : "none",
-                        display: "flex",
-                        flexDirection: { xs: "column", sm: "row" },
-                        alignItems: { xs: "flex-start", sm: "center" },
-                        gap: { xs: 1, sm: 0 },
-                      }}
-                    >
-                      <ListItemText
-                        primary={
-                          <Typography
-                            variant="body1"
-                            sx={{
-                              color: "#1a1a1a",
-                              fontWeight: 600,
-                              mb: 0.5,
-                            }}
-                          >
+                {upcomingReservations.map((reservation) => (
+                  <ListItem
+                    key={reservation.event_id}
+                    divider
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      py: 2,
+                    }}
+                  >
+                    <ListItemText
+                      primary={
+                        <Typography variant="h6" color="primary">
+                          {reservation.stadium_name || "Stadium"}
+                        </Typography>
+                      }
+                      secondary={
+                        <>
+                          <Typography variant="body1" color="text.secondary">
+                            Date:{" "}
                             {format(
                               parseISO(reservation.start_time),
-                              "EEEE, MMMM d, yyyy"
+                              "MMMM d, yyyy"
                             )}
                           </Typography>
-                        }
-                        secondary={
-                          <>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: "#2d4d2d",
-                                fontWeight: 500,
-                                mb: 0.5,
-                              }}
-                            >
-                              {`${format(
-                                parseISO(reservation.start_time),
-                                "h:mm a"
-                              )} - ${format(
-                                parseISO(reservation.end_time),
-                                "h:mm a"
-                              )}`}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: "#4a4a4a",
-                                fontWeight: 500,
-                              }}
-                            >
-                              {reservation.stadium_name}
-                            </Typography>
-                          </>
-                        }
-                      />
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={() => handleCancelClick(reservation)}
-                        sx={{
-                          mt: { xs: 1, sm: 0 },
-                          borderRadius: 2,
-                          textTransform: "none",
-                          minWidth: 100,
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </ListItem>
-                  ))
-                ) : (
-                  <ListItem sx={{ px: 0 }}>
+                          <Typography variant="body1" color="text.secondary">
+                            Time:{" "}
+                            {format(parseISO(reservation.start_time), "h:mm a")}{" "}
+                            - {format(parseISO(reservation.end_time), "h:mm a")}
+                          </Typography>
+                        </>
+                      }
+                    />
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleCancelClick(reservation)}
+                      sx={{ ml: 2 }}
+                    >
+                      Cancel
+                    </Button>
+                  </ListItem>
+                ))}
+                {upcomingReservations.length === 0 && (
+                  <ListItem>
                     <ListItemText
                       primary={
                         <Typography
-                          sx={{
-                            color: "#4a4a4a",
-                            fontStyle: "italic",
-                          }}
+                          variant="body1"
+                          color="text.secondary"
+                          align="center"
                         >
                           No upcoming reservations
                         </Typography>
