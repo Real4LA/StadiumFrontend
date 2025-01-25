@@ -16,6 +16,19 @@ services:
       - key: REACT_APP_ENV
         value: production
     headers:
+      # Cache static assets
+      - path: /static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      # Don't cache HTML files
+      - path: /*.html
+        name: Cache-Control
+        value: no-cache
+      # Don't cache service worker
+      - path: /service-worker.js
+        name: Cache-Control
+        value: no-cache
+      # Default no-cache for other files
       - path: /*
         name: Cache-Control
         value: no-cache
