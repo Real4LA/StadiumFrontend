@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Paper,
@@ -37,11 +37,7 @@ const Profile = () => {
   const [confirmationText, setConfirmationText] = useState("");
   const { user, checkAuth } = useAuth();
 
-  useEffect(() => {
-    fetchUpcomingReservations();
-  }, [fetchUpcomingReservations]);
-
-  const fetchUpcomingReservations = async () => {
+  const fetchUpcomingReservations = useCallback(async () => {
     try {
       console.log("Fetching upcoming reservations...");
       const token = localStorage.getItem("accessToken");
@@ -55,9 +51,7 @@ const Profile = () => {
       });
 
       if (response.status === 401) {
-        // Token expired, try to refresh auth
         await checkAuth();
-        // Retry the request
         return fetchUpcomingReservations();
       }
 
@@ -75,7 +69,6 @@ const Profile = () => {
           return;
         }
 
-        // Sort bookings by start time
         const sortedBookings = data.bookings.sort((a, b) => {
           return new Date(a.start_time) - new Date(b.start_time);
         });
@@ -101,7 +94,11 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [checkAuth]);
+
+  useEffect(() => {
+    fetchUpcomingReservations();
+  }, [fetchUpcomingReservations]);
 
   const handleCancelClick = (reservation) => {
     setSelectedReservation(reservation);

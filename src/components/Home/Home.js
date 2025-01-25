@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   Container,
   Grid,
@@ -123,9 +129,140 @@ const Home = () => {
     []
   );
 
-  const debouncedFetchSlots = debounce(async (date, fetchFunction) => {
-    await fetchFunction(date);
-  }, 300);
+  const handleTokenError = useCallback(
+    async (response) => {
+      if (response.status === 401) {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (refreshToken) {
+          try {
+            const refreshResponse = await fetch(
+              "http://localhost:8000/api/token/refresh/",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ refresh: refreshToken }),
+              }
+            );
+
+            if (refreshResponse.ok) {
+              const data = await refreshResponse.json();
+              localStorage.setItem("accessToken", data.access);
+              return true;
+            }
+          } catch (error) {
+            console.error("Error refreshing token:", error);
+          }
+        }
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        navigate("/login");
+        return false;
+      }
+      return true;
+    },
+    [navigate]
+  );
+
+  const fetchAvailableSlots = useCallback(
+    async (date) => {
+      setSlotsLoading(true);
+      setError(null);
+      try {
+        let allSlots = [];
+
+        for (const stadium of stadiums) {
+          try {
+            console.log(
+              `Fetching slots for ${stadium.name} with calendar ID: ${stadium.calendarId}`
+            );
+
+            const url =
+              getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.AVAILABLE_SLOTS) +
+              `?date=${format(
+                date,
+                "yyyy-MM-dd"
+              )}&calendar_id=${encodeURIComponent(stadium.calendarId)}`;
+
+            console.log("Fetching slots from URL:", url);
+
+            const response = await fetch(url, {
+              headers: getAuthHeaders(localStorage.getItem("accessToken")),
+            });
+
+            if (!(await handleTokenError(response))) continue;
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log(`Received data for ${stadium.name}:`, data);
+              const stadiumSlots = data.slots || [];
+
+              const slotsWithStadium = stadiumSlots.map((slot) => ({
+                ...slot,
+                stadiumId: stadium.id,
+                stadiumName: stadium.name,
+                color: stadium.color,
+                calendarId: stadium.calendarId,
+              }));
+
+              console.log(
+                `Processed slots for ${stadium.name}:`,
+                slotsWithStadium
+              );
+
+              allSlots = [...allSlots, ...slotsWithStadium];
+            } else {
+              const errorText = await response.text();
+              console.error(
+                `Error fetching slots for ${stadium.name}:`,
+                errorText
+              );
+            }
+          } catch (error) {
+            console.error(`Error fetching slots for ${stadium.name}:`, error);
+          }
+        }
+
+        console.log("All slots before sorting:", allSlots);
+
+        const now = new Date();
+        const isToday =
+          format(date, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+        const currentTime = format(now, "HH:mm");
+
+        const validSlots = allSlots
+          .filter((slot) => {
+            if (!slot || !slot.start || !slot.end) return false;
+            if (isToday) {
+              return slot.start > currentTime;
+            }
+            return true;
+          })
+          .sort((a, b) => {
+            if (!a.start || !b.start) return 0;
+            return a.start.localeCompare(b.start);
+          });
+
+        console.log("Final processed slots:", validSlots);
+        setAvailableSlots(validSlots);
+      } catch (error) {
+        console.error("Error fetching available slots:", error);
+        setError("Failed to fetch available slots. Please try again later.");
+      }
+      setSlotsLoading(false);
+    },
+    [stadiums, handleTokenError]
+  );
+
+  const debouncedFetchSlots = useMemo(
+    () =>
+      debounce(async (date, fetchFunction) => {
+        await fetchFunction(date);
+      }, 300),
+    []
+  );
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -152,136 +289,6 @@ const Home = () => {
         behavior: "smooth",
       });
     }
-  };
-
-  const handleTokenError = async (response) => {
-    if (response.status === 401) {
-      // Token expired, try to refresh
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (refreshToken) {
-        try {
-          const refreshResponse = await fetch(
-            "http://localhost:8000/api/token/refresh/",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ refresh: refreshToken }),
-            }
-          );
-
-          if (refreshResponse.ok) {
-            const data = await refreshResponse.json();
-            localStorage.setItem("accessToken", data.access);
-            return true; // Token refreshed successfully
-          }
-        } catch (error) {
-          console.error("Error refreshing token:", error);
-        }
-      }
-      // If we get here, either no refresh token or refresh failed
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-      navigate("/login");
-      return false;
-    }
-    return true;
-  };
-
-  const fetchAvailableSlots = async (date) => {
-    setSlotsLoading(true);
-    setError(null);
-    try {
-      let allSlots = [];
-
-      // Fetch slots for each stadium separately
-      for (const stadium of stadiums) {
-        try {
-          console.log(
-            `Fetching slots for ${stadium.name} with calendar ID: ${stadium.calendarId}`
-          );
-
-          const url =
-            getApiUrl(API_CONFIG.ENDPOINTS.CALENDAR.AVAILABLE_SLOTS) +
-            `?date=${format(
-              date,
-              "yyyy-MM-dd"
-            )}&calendar_id=${encodeURIComponent(stadium.calendarId)}`;
-
-          console.log("Fetching slots from URL:", url);
-
-          const response = await fetch(url, {
-            headers: getAuthHeaders(localStorage.getItem("accessToken")),
-          });
-
-          if (!(await handleTokenError(response))) continue;
-
-          if (response.ok) {
-            const data = await response.json();
-            console.log(`Received data for ${stadium.name}:`, data);
-            const stadiumSlots = data.slots || [];
-
-            // Map the slots with stadium info
-            const slotsWithStadium = stadiumSlots.map((slot) => ({
-              ...slot,
-              stadiumId: stadium.id,
-              stadiumName: stadium.name,
-              color: stadium.color,
-              calendarId: stadium.calendarId,
-            }));
-
-            console.log(
-              `Processed slots for ${stadium.name}:`,
-              slotsWithStadium
-            );
-
-            // Add these slots to our collection
-            allSlots = [...allSlots, ...slotsWithStadium];
-          } else {
-            const errorText = await response.text();
-            console.error(
-              `Error fetching slots for ${stadium.name}:`,
-              errorText
-            );
-            // Don't set error here to allow other stadiums to load
-          }
-        } catch (error) {
-          console.error(`Error fetching slots for ${stadium.name}:`, error);
-          // Don't set error here to allow other stadiums to load
-        }
-      }
-
-      console.log("All slots before sorting:", allSlots);
-
-      // Get current time if the date is today
-      const now = new Date();
-      const isToday = format(date, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
-      const currentTime = format(now, "HH:mm");
-
-      // Filter out passed time slots and invalid slots
-      const validSlots = allSlots
-        .filter((slot) => {
-          if (!slot || !slot.start || !slot.end) return false;
-          // If it's today, filter out passed time slots
-          if (isToday) {
-            return slot.start > currentTime;
-          }
-          return true;
-        })
-        .sort((a, b) => {
-          if (!a.start || !b.start) return 0;
-          return a.start.localeCompare(b.start);
-        });
-
-      console.log("Final processed slots:", validSlots);
-      setAvailableSlots(validSlots);
-    } catch (error) {
-      console.error("Error fetching available slots:", error);
-      setError("Failed to fetch available slots. Please try again later.");
-    }
-    setSlotsLoading(false);
   };
 
   const handleBookingClick = (slot) => {

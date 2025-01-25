@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import API_CONFIG, { getApiUrl, getDefaultHeaders } from "../config/api";
 import { jwtDecode } from "jwt-decode";
@@ -10,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const isTokenExpired = (token) => {
+  const isTokenExpired = useCallback((token) => {
     if (!token) return true;
     try {
       const decoded = jwtDecode(token);
@@ -19,9 +25,9 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return true;
     }
-  };
+  }, []);
 
-  const refreshToken = async () => {
+  const refreshToken = useCallback(async () => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) throw new Error("No refresh token available");
@@ -45,9 +51,9 @@ export const AuthProvider = ({ children }) => {
       logout();
       return null;
     }
-  };
+  }, []);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const storedUser = localStorage.getItem("user");
       const accessToken = localStorage.getItem("accessToken");
@@ -57,9 +63,7 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      // Check if token is expired
       if (isTokenExpired(accessToken)) {
-        // Try to refresh the token
         const newToken = await refreshToken();
         if (!newToken) {
           setUser(null);
@@ -74,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isTokenExpired, refreshToken]);
 
   useEffect(() => {
     checkAuth();
