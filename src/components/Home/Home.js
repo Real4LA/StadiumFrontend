@@ -1100,7 +1100,7 @@ const Home = () => {
                   Contact Us
                 </Typography>
                 <Link
-                  href="tel:+21600000000"
+                  href="tel:+21656107172"
                   sx={{
                     color: "#4a4a4a",
                     textDecoration: "none",
@@ -1113,11 +1113,11 @@ const Home = () => {
                   }}
                 >
                   <Typography variant="body1">
-                    Phone: +216 XX XXX XXX
+                    Phone: +216 56 107 172
                   </Typography>
                 </Link>
                 <Link
-                  href="mailto:contact@tottenhamstadium.com"
+                  href="mailto:mohamedalaaelabed@gmail.com"
                   sx={{
                     color: "#4a4a4a",
                     textDecoration: "none",
