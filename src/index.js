@@ -5,24 +5,36 @@ import App from "./App";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+// Create a base URL constant
+const BASE_URL = "https://stadium-frontend.onrender.com";
+
 // Handle refresh detection
 window.onload = function () {
-  // Set a flag in sessionStorage when the page is about to unload
-  window.addEventListener("beforeunload", () => {
-    sessionStorage.setItem("isRefresh", "true");
-  });
+  // Check if we're on the render.com domain
+  if (window.location.hostname === "stadium-frontend.onrender.com") {
+    // Get the current path
+    const currentPath = window.location.pathname;
 
-  // Check if this is a refresh and we're not on the main page
-  if (
-    sessionStorage.getItem("isRefresh") === "true" &&
-    window.location.hostname === "stadium-frontend.onrender.com" &&
-    window.location.pathname !== "/"
-  ) {
-    sessionStorage.removeItem("isRefresh");
-    window.location.replace("https://stadium-frontend.onrender.com");
-  } else {
-    sessionStorage.removeItem("isRefresh");
+    // If we're not at the root and this is a direct page load
+    if (currentPath !== "/" && !sessionStorage.getItem("app_initialized")) {
+      // Store the intended path
+      sessionStorage.setItem("redirect_after_load", currentPath);
+      // Redirect to root
+      window.location.href = BASE_URL;
+    }
+    // If we have a stored path and we're at root, redirect to the stored path
+    else if (
+      currentPath === "/" &&
+      sessionStorage.getItem("redirect_after_load")
+    ) {
+      const redirectPath = sessionStorage.getItem("redirect_after_load");
+      sessionStorage.removeItem("redirect_after_load");
+      window.history.pushState({}, "", redirectPath);
+    }
   }
+
+  // Mark that the app has been initialized
+  sessionStorage.setItem("app_initialized", "true");
 };
 
 const theme = createTheme({
