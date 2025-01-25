@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   BASE_URL:
-    process.env.REACT_APP_API_URL || "https://stadiumbackend.onrender.com",
+    process.env.REACT_APP_API_URL || "https://stadium-backend.onrender.com",
   ENDPOINTS: {
     AUTH: {
       LOGIN: "auth/login/",
