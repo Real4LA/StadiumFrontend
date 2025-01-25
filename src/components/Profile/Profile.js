@@ -425,7 +425,15 @@ const Profile = () => {
                   >
                     <ListItemText
                       primary={
-                        <Typography variant="h6" color="primary">
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: "#2d4d2d",
+                            fontWeight: 600,
+                            fontSize: "1.1rem",
+                            mb: 1,
+                          }}
+                        >
                           {reservation.stadiumName || "Stadium"}
                         </Typography>
                       }
