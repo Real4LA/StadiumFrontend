@@ -13,11 +13,7 @@ import { useNavigate } from "react-router-dom";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import Footer from "../Layout/Footer";
 import stadiumBackground from "../../assets/stadium-hero.jpg";
-import API_CONFIG, {
-  getApiUrl,
-  getDefaultHeaders,
-  getAuthHeaders,
-} from "../../config/api";
+import API_CONFIG, { getApiUrl, getDefaultHeaders } from "../../config/api";
 
 const VerifyCode = ({ email, userId }) => {
   const [verificationCode, setVerificationCode] = useState("");

@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
 
   const login = (userData, tokens) => {
     localStorage.setItem("user", JSON.stringify(userData));

@@ -50,7 +50,7 @@ const testimonials = [
     avatar: "JD",
   },
   {
-    name: "Sarah Smith",
+    name: "Sarah Clarck",
     rating: 4,
     comment: "Very well maintained and professional staff. Highly recommended!",
     avatar: "SS",
@@ -96,29 +96,32 @@ const Home = () => {
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [tempDate, setTempDate] = useState(new Date());
 
-  const stadiums = [
-    {
-      id: 1,
-      name: "Stadium 1",
-      calendarId:
-        "433adde78c577df19c67e7d18b2e932c8aa5b60b05098687a13a227712510f5d@group.calendar.google.com",
-      color: "#2d4d2d",
-    },
-    {
-      id: 2,
-      name: "Stadium 2",
-      calendarId:
-        "c0981f9f07e185a73808a13deb4e2648915ff7f9a28cfe35bb212ff87115a435@group.calendar.google.com",
-      color: "#4a2d4d",
-    },
-    {
-      id: 3,
-      name: "Stadium 3",
-      calendarId:
-        "a233987f0f4b9c95f17c3abf7055ab3287b7765b2c24c02968360fe68a3f2071@group.calendar.google.com",
-      color: "#2d3d4d",
-    },
-  ];
+  const stadiums = useMemo(
+    () => [
+      {
+        id: 1,
+        name: "Stadium 1",
+        calendarId:
+          "433adde78c577df19c67e7d18b2e932c8aa5b60b05098687a13a227712510f5d@group.calendar.google.com",
+        color: "#2d4d2d",
+      },
+      {
+        id: 2,
+        name: "Stadium 2",
+        calendarId:
+          "c0981f9f07e185a73808a13deb4e2648915ff7f9a28cfe35bb212ff87115a435@group.calendar.google.com",
+        color: "#4a2d4d",
+      },
+      {
+        id: 3,
+        name: "Stadium 3",
+        calendarId:
+          "a233987f0f4b9c95f17c3abf7055ab3287b7765b2c24c02968360fe68a3f2071@group.calendar.google.com",
+        color: "#2d3d4d",
+      },
+    ],
+    []
+  );
 
   const debouncedFetchSlots = debounce(async (date, fetchFunction) => {
     await fetchFunction(date);
@@ -140,7 +143,7 @@ const Home = () => {
     return () => {
       debouncedFetchSlots.clear();
     };
-  }, [selectedDate]);
+  }, [selectedDate, debouncedFetchSlots, fetchAvailableSlots]);
 
   const scrollToSlots = () => {
     if (slotsRef.current) {

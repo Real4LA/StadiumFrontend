@@ -39,7 +39,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchUpcomingReservations();
-  }, []);
+  }, [fetchUpcomingReservations]);
 
   const fetchUpcomingReservations = async () => {
     try {

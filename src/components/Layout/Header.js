@@ -4,7 +4,6 @@ import {
   Box,
   Toolbar,
   Typography,
-  Button,
   IconButton,
   Menu,
   MenuItem,
