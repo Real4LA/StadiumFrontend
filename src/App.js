@@ -7,6 +7,7 @@ import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import Profile from "./components/Profile/Profile";
 import VerifyCode from "./components/Auth/VerifyCode";
+import ForgotPassword from "./components/Auth/ForgotPassword";
 import Header from "./components/Layout/Header";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
@@ -28,6 +29,7 @@ function App() {
             />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/profile"
               element={

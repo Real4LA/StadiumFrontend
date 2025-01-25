@@ -10,6 +10,8 @@ export const API_CONFIG = {
       RESEND_CODE: "users/resend-code/",
       USER_INFO: "users/me/",
       REFRESH_TOKEN: "token/refresh/",
+      REQUEST_PASSWORD_RESET: "auth/password-reset/",
+      RESET_PASSWORD: "auth/password-reset/confirm/",
     },
     CALENDAR: {
       AVAILABLE_SLOTS: "calendar/available_slots/",

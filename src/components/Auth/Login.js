@@ -298,6 +298,24 @@ const Login = () => {
               >
                 Don't have an account? Sign Up
               </Link>
+              <Box mt={1}>
+                <Link
+                  component={RouterLink}
+                  to="/forgot-password"
+                  variant="body2"
+                  sx={{
+                    color: "#2d4d2d",
+                    textDecoration: "none",
+                    fontWeight: 500,
+                    "&:hover": {
+                      textDecoration: "underline",
+                      color: "#1a331a",
+                    },
+                  }}
+                >
+                  Forgot your password?
+                </Link>
+              </Box>
             </Box>
           </Box>
         </Paper>
