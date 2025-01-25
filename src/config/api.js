@@ -21,6 +21,8 @@ const API_CONFIG = {
   },
 };
 
+export default API_CONFIG;
+
 // Helper function to ensure proper URL formatting
 export const getApiUrl = (endpoint) => {
   // Remove any leading slashes from the endpoint
@@ -39,5 +41,3 @@ export const getAuthHeaders = (token) => ({
   ...getDefaultHeaders(),
   Authorization: `Bearer ${token}`,
 });
-
-export default API_CONFIG;
