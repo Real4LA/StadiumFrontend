@@ -1,5 +1,5 @@
 // API Configuration
-const API_CONFIG = {
+export const API_CONFIG = {
   BASE_URL:
     process.env.REACT_APP_API_URL || "https://stadiumbackend.onrender.com",
   ENDPOINTS: {
@@ -20,8 +20,6 @@ const API_CONFIG = {
     },
   },
 };
-
-export default API_CONFIG;
 
 // Helper function to ensure proper URL formatting
 export const getApiUrl = (endpoint) => {
