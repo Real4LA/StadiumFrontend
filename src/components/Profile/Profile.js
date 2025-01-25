@@ -100,15 +100,15 @@ const Profile = () => {
     fetchUpcomingReservations();
   }, [fetchUpcomingReservations]);
 
-  const handleCancelClick = (reservation) => {
+  const handleCancelClick = useCallback((reservation) => {
     setSelectedReservation(reservation);
     setOpenCancelDialog(true);
     setCancelError(null);
     setCancelSuccess(false);
     setConfirmationText("");
-  };
+  }, []);
 
-  const handleCancelClose = () => {
+  const handleCancelClose = useCallback(() => {
     setOpenCancelDialog(false);
     setSelectedReservation(null);
     setCancelError(null);
@@ -116,9 +116,9 @@ const Profile = () => {
     if (cancelSuccess) {
       fetchUpcomingReservations();
     }
-  };
+  }, [cancelSuccess, fetchUpcomingReservations]);
 
-  const handleCancelConfirm = async () => {
+  const handleCancelConfirm = useCallback(async () => {
     if (confirmationText !== "I AGREE") {
       setCancelError("Please type 'I AGREE' to cancel the booking");
       return;
@@ -152,7 +152,7 @@ const Profile = () => {
         "Failed to connect to the server. Please try again later."
       );
     }
-  };
+  }, [confirmationText, selectedReservation, handleCancelClose]);
 
   if (loading) {
     return (

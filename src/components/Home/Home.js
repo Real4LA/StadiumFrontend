@@ -22,7 +22,6 @@ import {
   DialogContent,
   DialogActions,
   Divider,
-  useTheme,
   alpha,
   IconButton,
   Link,
@@ -277,28 +276,27 @@ const Home = () => {
     };
   }, [selectedDate, debouncedFetchSlots, fetchAvailableSlots]);
 
-  const scrollToSlots = () => {
+  const scrollToSlots = useCallback(() => {
     if (slotsRef.current) {
       window.scrollTo({
         top: slotsRef.current.offsetTop - 100,
         behavior: "smooth",
       });
     }
-  };
+  }, []);
 
-  const handleBookingClick = (slot) => {
+  const handleBookingClick = useCallback((slot) => {
     setSelectedSlot(slot);
     setOpenBooking(true);
-  };
+  }, []);
 
-  const handleBookingConfirm = async () => {
+  const handleBookingConfirm = useCallback(async () => {
     if (confirmation !== "I CONFIRM") {
       setError("Please type 'I CONFIRM' exactly to proceed with the booking");
       return;
     }
 
     try {
-      // First check if the slot is still available
       const checkResponse = await fetch(
         `${getApiUrl(
           API_CONFIG.ENDPOINTS.CALENDAR.AVAILABLE_SLOTS
@@ -326,13 +324,12 @@ const Home = () => {
           setTimeout(() => {
             setOpenBooking(false);
             setConfirmation("");
-            fetchAvailableSlots(selectedDate); // Refresh slots
+            fetchAvailableSlots(selectedDate);
           }, 2000);
           return;
         }
       }
 
-      // Proceed with booking if slot is still available
       const bookingData = {
         start_time: `${format(selectedDate, "yyyy-MM-dd")}T${
           selectedSlot.start
@@ -363,7 +360,7 @@ const Home = () => {
       if (response.ok) {
         const responseData = await response.json();
         console.log("Booking response:", responseData);
-        fetchAvailableSlots(selectedDate); // Refresh all slots after booking
+        fetchAvailableSlots(selectedDate);
         navigate("/profile");
       } else {
         const errorData = await response.json();
@@ -376,30 +373,37 @@ const Home = () => {
     }
     setOpenBooking(false);
     setConfirmation("");
-  };
+  }, [
+    confirmation,
+    selectedDate,
+    selectedSlot,
+    handleTokenError,
+    fetchAvailableSlots,
+    navigate,
+  ]);
 
-  const handleBookingCancel = () => {
+  const handleBookingCancel = useCallback(() => {
     setOpenBooking(false);
     setSelectedSlot(null);
     setConfirmation("");
     setError(null);
-  };
+  }, []);
 
-  const handleConfirmationChange = (e) => {
+  const handleConfirmationChange = useCallback((e) => {
     setConfirmation(e.target.value);
     setError(null);
-  };
+  }, []);
 
-  const handleOpenDatePicker = () => {
+  const handleOpenDatePicker = useCallback(() => {
     setTempDate(selectedDate);
     setOpenDatePicker(true);
-  };
+  }, [selectedDate]);
 
-  const handleCloseDatePicker = () => {
+  const handleCloseDatePicker = useCallback(() => {
     setOpenDatePicker(false);
-  };
+  }, []);
 
-  const handleDateConfirm = () => {
+  const handleDateConfirm = useCallback(() => {
     if (tempDate && tempDate >= new Date().setHours(0, 0, 0, 0)) {
       setSelectedDate(tempDate);
       setOpenDatePicker(false);
@@ -409,7 +413,7 @@ const Home = () => {
     } else {
       setError("Please select a valid date");
     }
-  };
+  }, [tempDate, scrollToSlots]);
 
   const getFilteredSlots = useMemo(() => {
     return stadiums.map((stadium) => ({

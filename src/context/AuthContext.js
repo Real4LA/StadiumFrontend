@@ -16,6 +16,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const logout = useCallback(() => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setUser(null);
+    navigate("/login");
+  }, [navigate]);
+
   const isTokenExpired = useCallback((token) => {
     if (!token) return true;
     try {
@@ -84,20 +92,12 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [checkAuth]);
 
-  const login = (userData, tokens) => {
+  const login = useCallback((userData, tokens) => {
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("accessToken", tokens.access);
     localStorage.setItem("refreshToken", tokens.refresh);
     setUser(userData);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setUser(null);
-    navigate("/login");
-  };
+  }, []);
 
   const value = {
     user,
